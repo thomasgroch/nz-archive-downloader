@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conversor de URLs NDHA (IE → FL + dígitos ajustados)</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        h1 {
+            color: #2c3e50;
+        }
+        input, button {
+            padding: 8px;
+            font-size: 16px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        #result {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            background-color: #f9f9f9;
+        }
+        a {
+            color: #3498db;
+            text-decoration: none;
+            word-break: break-all;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <h1>Conversor de URLs NDHA</h1>
+    <p>Cole a URL com <strong>IE...</strong> para gerar a URL com <strong>FL...</strong> e <code>&dps_func=stream</code>:</p>
+
+    <input type="text" id="inputUrl" placeholder="Ex: https://ndhadeliver.natlib.govt.nz/delivery/DeliveryManagerServlet?dps_pid=IE69004142&dps_custom_att_1=emu" />
+    <button onclick="convertUrl()">Converter</button>
+
+    <div id="result"></div>
+
+    <script>
+        function convertUrl() {
+            const inputUrl = document.getElementById("inputUrl").value.trim();
+            const resultDiv = document.getElementById("result");
+
+            // Extrai o PID (IE...) da URL usando expressão regular
+            const pidMatch = inputUrl.match(/dps_pid=(IE\d{8})/);
+
+            if (!pidMatch) {
+                resultDiv.innerHTML = `<p style="color: red;">URL inválida. Certifique-se de que contém um PID no formato "IE12345678".</p>`;
+                return;
+            }
+
+            const iePid = pidMatch[1]; // Ex: "IE69004142"
+            const digits = iePid.substring(2); // "69004142"
+
+            // Ajusta os últimos dígitos (ex: "42" → "76")
+            const adjustedDigits = digits.substring(0, 6) + "76"; // "690041" + "76" = "69004176"
+            const flPid = "FL" + adjustedDigits; // Converte para "FL69004176"
+
+            // Gera a nova URL com dps_func=stream
+            const newUrl = `https://ndhadeliver.natlib.govt.nz/delivery/DeliveryManagerServlet?dps_pid=${flPid}&dps_func=stream`;
+
+            // Exibe o resultado com link clicável
+            resultDiv.innerHTML = `
+                <p><strong>URL original:</strong> <a href="${inputUrl}" target="_blank">${inputUrl}</a></p>
+                <p><strong>URL convertida:</strong> <a href="${newUrl}" target="_blank">${newUrl}</a></p>
+                <p><strong>PID convertido:</strong> ${iePid} → ${flPid}</p>
+            `;
+        }
+
+        // Permite pressionar "Enter" para converter
+        document.getElementById("inputUrl").addEventListener("keyup", function(event) {
+            if (event.key === "Enter") {
+                convertUrl();
+            }
+        });
+    </script>
+</body>
+</html>
