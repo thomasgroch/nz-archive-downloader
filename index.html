@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conversor de Links - National Library NZ</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        h1 {
+            color: #2c3e50;
+        }
+        input, button {
+            padding: 8px;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        #result {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            word-break: break-all;
+        }
+        a {
+            color: #2980b9;
+        }
+    </style>
+</head>
+<body>
+    <h1>Conversor de Links - National Library NZ</h1>
+    <p>Cole o link original (com "IE..." ou "FL...") para gerar o link de download direto:</p>
+    
+    <input type="text" id="originalLink" placeholder="https://ndhadeliver...IE69004142...">
+    <button onclick="convertLink()">Converter</button>
+    
+    <div id="result"></div>
+
+    <script>
+        function convertLink() {
+            const originalLink = document.getElementById('originalLink').value.trim();
+            let result = "";
+
+            // Extrai o ID (IE... ou FL...)
+            const idMatch = originalLink.match(/(IE|FL)\d+/);
+            if (!idMatch) {
+                result = "❌ Nenhum ID (IE... ou FL...) encontrado no link.";
+            } else {
+                const id = idMatch[0];
+                const isIE = id.startsWith("IE");
+                const newId = isIE ? id.replace("IE", "FL") : id;
+
+                // Gera o link de download direto
+                const directLink = `https://ndhadeliver.natlib.govt.nz/delivery/DeliveryManagerServlet?dps_pid=${newId}&dps_func=stream`;
+                result = `✅ <strong>Link para download direto:</strong><br><a href="${directLink}" target="_blank">${directLink}</a>`;
+                
+                // Adiciona opção alternativa (IIPServer)
+                const iipLink = `https://ndhadeliver.natlib.govt.nz/iipsrv?FIF=/2021/05/21/ac_1/V1-${newId}.jp2&RST=*`;
+                result += `<br><br>🔄 <strong>Alternativa (IIPImage):</strong><br><a href="${iipLink}" target="_blank">${iipLink}</a>`;
+            }
+
+            document.getElementById('result').innerHTML = result;
+        }
+    </script>
+</body>
+</html>
